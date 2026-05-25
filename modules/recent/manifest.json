@@ -1,0 +1,9 @@
+{
+  "name": "recent",
+  "version": "1.0",
+  "author": "project",
+  "requires_admin": false,
+  "artifacts": ["automatic_destinations", "custom_destinations"],
+  "output_format": "json",
+  "dependencies": ["JLECmd.exe"]
+}

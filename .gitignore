@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+output/
+*.zip
+.env
+.env.*
+cli/config/targets.json
+.idea/
+.vscode/

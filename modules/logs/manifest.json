@@ -1,0 +1,8 @@
+{
+  "name": "logs",
+  "version": "1.0",
+  "author": "project",
+  "requires_admin": false,
+  "artifacts": ["services", "userassist", "service_events"],
+  "output_format": "json"
+}
