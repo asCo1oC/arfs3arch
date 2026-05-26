@@ -55,10 +55,3 @@ python3 -c "from analyzer.parsers.logs_parser import LogsParser; print(LogsParse
 Лицензия
 
 Проект поставляется с лицензией MIT (файл `LICENSE`).
-
-Контакты и развитие
-
-Если вы хотите продолжить разработку:
-- Добавьте модуль тестирования для `analyzer`.
-- Улучшите правила в `config/rules.yaml`.
-- Добавьте CI (GitHub Actions) для тестов/линтинга.
