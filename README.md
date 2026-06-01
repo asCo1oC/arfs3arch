@@ -1,57 +1,54 @@
-# arfs3arch — ARF S3arch (Windows Artifact Collector & Analyzer)
+# ARFSearch v2 (WinRM)
 
-Research artifacts in Windows Systems.
+ARFSearch v2 is an artifact-collection tool focused on Windows endpoint collection using WinRM and SMB transports. This repository contains a CLI for managing targets, deploying a PowerShell runner on remote hosts, and retrieving collected archives.
 
-Проект представляет собой минимальный MVP-инструмент для удалённого сбора артефактов Windows (браузерные данные, логи, recent и другие) и последующего анализа собранных данных (пакетный парсер логов, анализ UserAssist и классификация сервисов).
+## Highlights (changes)
+- Targets format: `config/targets.json` now uses named targets (top-level key is `target_name`). Each entry includes `ip`, `user`, `password`, `proto` and optional `lmhash`/`nthash` for NTLM hash auth.
+- NTLM hash support: You can provide NTLM hashes (LM:NT or NT only) when adding targets. The tool uses Impacket (if installed) to authenticate via SMB using LM/NT hash (pass-the-hash style). WinRM still requires a plaintext password.
+- SMB fallback: If WinRM session cannot be established (or when only hashes were provided), the tool will try SMB deployment using Impacket. This enables deploying without knowledge of the plaintext password on hosts that accept SMB auth.
+- HTTP server for large files: the CLI can start a local HTTP server to serve large files to the target for download during WinRM deployment; this is configured via `config/settings.json` (http_listen_address, http_port, http_server_auto_stop).
+- Backwards compatibility: older `targets.json` file format (IP keys) is automatically migrated to the new named-target format on load.
 
-Основные компоненты
+## Usage
+1. Ensure dependencies are installed (recommended inside virtualenv):
 
-- `cli/cli.py` — operator CLI. Устанавливает SSH/SFTP-сессию (используется paramiko), деплоит PowerShell-скрипты на целевую машину, запускает модули сбора и скачивает итоговый ZIP.
-- `runner/runner.ps1` — PowerShell-скрипт (runner) который выполняется на целевой Windows-машине и собирает артефакты в `output/`.
-- `modules/` — папки с модулями сбора (`browser`, `logs`, `recent` и т.д.).
-- `analyzer/` — модуль анализа: парсер собранных `logs.json`, декодер UserAssist и тестовый скрипт `test_logs.py`.
-- `config/` — настройки и правила классификации (например `rules.yaml` используется парсером).
-
-Быстрый старт (локально)
-
-1. Создайте виртуальное окружение и установите зависимости:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r cli/requirements.txt
+```sh
+pip install -r requirements.txt
+# For SMB hash auth (optional):
+pip install impacket
 ```
 
-2. Запуск CLI (локально):
+2. Edit `config/settings.json` for HTTP server options if needed. If you want target machines to reach your HTTP server, set `http_listen_address` to an interface reachable by targets or `0.0.0.0`.
 
-```bash
-python3 cli/cli.py
+3. Add targets via the CLI. You can provide an NTLM hash instead of a password:
+
+- Start CLI:
+
+```sh
+python cli/cli.py
 ```
 
-CLI хранит цель в `cli/config/targets.json`.
+- Add target: supply IP, username, and either password or NTLM hash (format `LM:NTHASH` or just `NTHASH`). Optionally set a target name.
 
-Анализ собранных данных (локально)
+4. Connect: choose target by number or name. If WinRM password is provided the tool will try WinRM; if only hash provided it will try SMB using Impacket.
 
-1. Если у вас есть `logs.json` (например, в `output/old/.../logs.json`), можно запустить анализатор:
+## Files of interest
+- `cli/cli.py` - CLI entrypoint, target management and connect flow.
+- `cli/transport/winrm_transport.py` - WinRM transport, deploy & retrieval logic. Handles WinRM + HTTP and SMB fallback.
+- `cli/transport/smb_transport.py` - SMB helper using Impacket; supports lmhash/nthash.
+- `tools/http_server.py` - lightweight HTTP server used to serve large files to target.
+- `runner/runner.ps1` and `modules/` - code deployed to the target for artifact collection.
+- `config/settings.json`, `config/targets.json` - runtime configuration and saved targets.
 
-```bash
-python3 analyzer/test_logs.py
-```
+## Security notes
+- `config/targets.json` may contain sensitive information (passwords or NTLM hashes). Keep it out of version control (it is in `.gitignore`) and protect the file.
 
-2. Для запуска парсера напрямую:
+## Troubleshooting
+- If you see `No route to host` when connecting: verify the target IP and network connectivity (ping/nc/traceroute).
+- If authentication fails but SMB works for an admin account, try using NTLM hash + SMB path.
 
-```bash
-python3 -c "from analyzer.parsers.logs_parser import LogsParser; print(LogsParser().parse('path/to/logs.json'))"
-```
+## Contributing
+Open issues or pull requests for feature suggestions or fixes.
 
-Структура вывода парсера
-
-Парсер возвращает словарь с ключами: `metadata`, `services`, `user_assist`, `service_events`. Объекты `services` и `user_assist` уже содержат дополнительные поля: `hostname`, `username`, `collection_id`, `category`, `risk_score`, `tags`.
-
-Безопасность и ответственность
-
-Проект содержит инструменты удалённого выполнения и сбора данных. Используйте исключительно в пределах разрешённой тестовой среды или с явного разрешения владельца систем. Автономный запуск на чужих системах нарушает закон.
-
-Лицензия
-
-Проект поставляется с лицензией MIT (файл `LICENSE`).
+---
+Updated to reflect code changes made on or around 2026-06-01.
