@@ -1,0 +1,6 @@
+{
+    "name": "domain",
+    "description": "Active Directory context and trust relationships",
+    "requires_admin": false,
+    "outputs": ["domain.json"]
+}

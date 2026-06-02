@@ -1,0 +1,6 @@
+{
+    "name": "network",
+    "description": "Passive network state enumeration (ARP, DNS, routes, active connections, interfaces)",
+    "requires_admin": false,
+    "outputs": ["network.json"]
+}
