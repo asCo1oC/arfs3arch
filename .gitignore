@@ -1,0 +1,12 @@
+# Кэш Python
+__pycache__/
+*.py[cod]
+
+# Локальная база данных и состояние
+analyzer_web/state/
+*.db
+*.db-shm
+*.db-wal
+
+tools/*
+!tools/portable.ps1

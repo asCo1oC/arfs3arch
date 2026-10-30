@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Анализ собранных данных</title><link rel="stylesheet" href="/static/styles.css"></head>
+<body><div id="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">PEA</span><div><strong>OffSec Evidence</strong><small>Консоль оператора</small></div></div>
+    <div class="project-selector"><label for="projectSelect">ПРОЕКТ</label><select id="projectSelect"></select><button id="rescanButton" class="button secondary">Обновить коллекции</button></div>
+    <nav id="navigation" aria-label="Разделы приложения">
+      <button data-view="overview" class="active">Оперативная сводка</button>
+      <button data-view="graph">Связи объектов</button>
+      <span>ДАННЫЕ И ВЕКТОРЫ</span>
+      <button data-view="identity">Доступ и токен</button>
+      <button data-view="permissions">Привилегии и ACL</button>
+      <button data-view="logs">Службы, задачи и логи</button>
+      <button data-view="network">Сеть и удалённый доступ</button>
+      <button data-view="domain">Active Directory</button>
+      <button data-view="configs">Конфиги и секреты</button>
+      <button data-view="browser">Активность браузеров</button>
+      <button data-view="recent">Недавняя активность</button>
+      <span>ДОКАЗАТЕЛЬСТВА И ПОЛНОТА</span><button data-view="artifacts">Собранные файлы</button><button data-view="health">Полнота сбора</button>
+    </nav>
+    <div class="sidebar-footer">ЛОКАЛЬНО · ТОЛЬКО ЧТЕНИЕ<br><span id="schemaLabel">СХЕМА —</span></div>
+  </aside>
+  <main><header><div><h1 id="pageTitle">Проекты</h1><p id="pageSubtitle">Выберите коллекцию</p></div><div class="header-tools"><input id="globalSearch" placeholder="Поиск по сырым данным" aria-label="Поиск по сырым данным"><button id="searchButton" class="button">Найти</button></div></header><section id="content"><div class="empty-state">Загрузка коллекций…</div></section></main>
+  <aside id="details" class="details hidden" aria-label="Детали записи"><button id="closeDetails">Закрыть</button><div id="detailsContent"></div></aside>
+</div><script type="module" src="/static/app.js"></script></body></html>
